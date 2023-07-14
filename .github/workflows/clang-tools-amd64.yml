@@ -80,7 +80,7 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: clang-tools
-        path: "${{ matrix.release }}${{ matrix.bindir }}/clang-*-${{ env.suffix }}*"
+        path: "${{ matrix.release }}${{ matrix.bindir }}/clang*-*-${{ env.suffix }}*"
         retention-days: 1
   draft-release:
     runs-on: ubuntu-22.04
@@ -97,5 +97,5 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          file: "clang-*"
+          file: "clang*"
           draft: true
