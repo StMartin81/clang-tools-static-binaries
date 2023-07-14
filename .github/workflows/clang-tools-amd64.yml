@@ -12,7 +12,7 @@ jobs:
         os: [ linux ]
         include:
           - clang-version: 16
-            release: llvm-project-16.0.3.src
+            release: llvm-project-16.0.6.src
           - os: linux
             runner: ubuntu-22.04
             os-cmake-args: '-DLLVM_BUILD_STATIC=ON -DCMAKE_CXX_FLAGS="-s -flto" ${POSIX_CMAKE_ARGS}'
@@ -46,13 +46,14 @@ jobs:
     - name: cmake
       run: cmake -S ${{ matrix.release }}/llvm -B ${{ matrix.release }}/build ${{ env.COMMON_CMAKE_ARGS }} ${{ matrix.os-cmake-args }} ${{ matrix.extra-cmake-args }}
     - name: build
-      run: cmake --build ${{ matrix.release }}/build ${{ matrix.build-args }} --target clang-format clang-query clang-tidy
+      run: cmake --build ${{ matrix.release }}/build ${{ matrix.build-args }} --target clang-format clang-query clang-tidy clangd
     - name: rename output binary
       run: |
         cd ${{ matrix.release }}${{ matrix.bindir }}
         mv clang-format${{ matrix.dotexe }} clang-format-${{ env.suffix }}${{ matrix.dotexe }}
         mv clang-query${{ matrix.dotexe }} clang-query-${{ env.suffix }}${{ matrix.dotexe }}
         mv clang-tidy${{ matrix.dotexe }} clang-tidy-${{ env.suffix }}${{ matrix.dotexe }}
+        mv clangd${{ matrix.dotexe }} clangd-${{ env.suffix }}${{ matrix.dotexe }}
     - name: create and print sha512sum
       shell: bash
       run: |
@@ -60,10 +61,12 @@ jobs:
         ${{ matrix.shacmd }} clang-format-${{ env.suffix }} > clang-format-${{ env.suffix }}.sha512sum
         ${{ matrix.shacmd }} clang-query-${{ env.suffix }} > clang-query-${{ env.suffix }}.sha512sum
         ${{ matrix.shacmd }} clang-tidy-${{ env.suffix }} > clang-tidy-${{ env.suffix }}.sha512sum
+        ${{ matrix.shacmd }} clangd-${{ env.suffix }} > clangd-${{ env.suffix }}.sha512sum
         echo "Checksums are: "
         cat clang-format-${{ env.suffix }}.sha512sum
         cat clang-query-${{ env.suffix }}.sha512sum
         cat clang-tidy-${{ env.suffix }}.sha512sum
+        cat clangd-${{ env.suffix }}.sha512sum
     - name: upload artifacts
       uses: actions/upload-artifact@v2
       with:
