@@ -8,11 +8,11 @@ jobs:
   build:
     strategy:
       matrix:
-        clang-version: [ 18 ]
+        clang-version: [ 19 ]
         os: [ linux, windows ]
         include:
-          - clang-version: 18
-            release: llvm-project-18.1.8.src
+          - clang-version: 19
+            release: llvm-project-19.1.0.src
           - os: linux
             runner: ubuntu-22.04
             os-cmake-args: '-DLLVM_BUILD_STATIC=ON -DCMAKE_CXX_FLAGS="-s -flto" ${POSIX_CMAKE_ARGS}'
