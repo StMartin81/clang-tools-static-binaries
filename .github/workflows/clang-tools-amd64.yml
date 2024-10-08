@@ -77,9 +77,9 @@ jobs:
         cat clang-tidy-${{ env.suffix }}.sha512sum
         cat clangd-${{ env.suffix }}.sha512sum
     - name: upload artifacts
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
-        name: clang-tools
+        name: clang-tools-${{ matrix.os }}
         path: "${{ matrix.release }}${{ matrix.bindir }}/clang*-${{ env.suffix }}*"
         retention-days: 1
   draft-release:
@@ -87,9 +87,10 @@ jobs:
     needs: build
     steps:
       - name: download artifacts
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4
         with:
-          name: clang-tools
+            pattern: clang-tools-*
+            merge-multiple: true
       - name: list files
         run: ls -laR .
       - name: draft release
