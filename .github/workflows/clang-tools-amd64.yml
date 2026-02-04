@@ -54,7 +54,7 @@ jobs:
       - name: cmake
         run: cmake -S ${{ matrix.release }}/llvm -B ${{ matrix.release }}/build ${{ env.COMMON_CMAKE_ARGS }} ${{ matrix.os-cmake-args }} ${{ matrix.extra-cmake-args }}
       - name: build
-        run: cmake --build ${{ matrix.release }}/build ${{ matrix.build-args }} --target clang clang-format clang-query clang-tidy clangd
+        run: cmake --build ${{ matrix.release }}/build ${{ matrix.build-args }} --target clang clang-format clang-query clang-tidy clangd diagtool
       - name: rename output binary
         run: |
           cd ${{ matrix.release }}${{ matrix.bindir }}
@@ -63,6 +63,7 @@ jobs:
           mv clang-query${{ matrix.dotexe }} clang-query-${{ env.suffix }}${{ matrix.dotexe }}
           mv clang-tidy${{ matrix.dotexe }} clang-tidy-${{ env.suffix }}${{ matrix.dotexe }}
           mv clangd${{ matrix.dotexe }} clangd-${{ env.suffix }}${{ matrix.dotexe }}
+          mv diagtool${{ matrix.dotexe }} diagtool-${{ env.suffix }}${{ matrix.dotexe }}
       - name: create and print sha512sum
         shell: bash
         run: |
@@ -72,17 +73,21 @@ jobs:
           ${{ matrix.shacmd }} clang-query-${{ env.suffix }} > clang-query-${{ env.suffix }}.sha512sum
           ${{ matrix.shacmd }} clang-tidy-${{ env.suffix }} > clang-tidy-${{ env.suffix }}.sha512sum
           ${{ matrix.shacmd }} clangd-${{ env.suffix }} > clangd-${{ env.suffix }}.sha512sum
+          ${{ matrix.shacmd }} diagtool-${{ env.suffix }} > diagtool-${{ env.suffix }}.sha512sum
           echo "Checksums are: "
           cat clang-${{ env.suffix }}.sha512sum
           cat clang-format-${{ env.suffix }}.sha512sum
           cat clang-query-${{ env.suffix }}.sha512sum
           cat clang-tidy-${{ env.suffix }}.sha512sum
           cat clangd-${{ env.suffix }}.sha512sum
+          cat diagtool-${{ env.suffix }}.sha512sum
       - name: upload artifacts
         uses: actions/upload-artifact@v4
         with:
           name: clang-tools-${{ matrix.os }}
-          path: "${{ matrix.release }}${{ matrix.bindir }}/clang*-${{ env.suffix }}*"
+          path: |
+            ${{ matrix.release }}${{ matrix.bindir }}/clang*-${{ env.suffix }}*
+            ${{ matrix.release }}${{ matrix.bindir }}/diagtool*-${{ env.suffix }}*
           retention-days: 1
   draft-release:
     runs-on: ubuntu-22.04
@@ -100,5 +105,5 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          file: "clang*"
+          file: "clang-*;diagtool-*"
           draft: true
