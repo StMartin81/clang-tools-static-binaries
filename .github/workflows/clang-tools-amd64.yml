@@ -85,7 +85,7 @@ jobs:
           cat clangd-${{ env.suffix }}.sha512sum
           cat diagtool-${{ env.suffix }}.sha512sum
       - name: upload artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: clang-tools-${{ matrix.os }}
           path: |
@@ -99,7 +99,7 @@ jobs:
       contents: write
     steps:
       - name: download artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v6
         with:
           pattern: clang-tools-*
           merge-multiple: true
